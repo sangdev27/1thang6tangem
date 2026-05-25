@@ -604,6 +604,28 @@
 
         // Luôn dùng config local mặc định, không cần websiteId trên URL
         var websiteId = '50bbfaeb61587746';
+        window.APP_CONFIG_PROMISE = (async () => {
+            const configUrl = '/data/' + encodeURIComponent(websiteId) + '.json';
+            try {
+                const res = await fetch(configUrl, { cache: 'no-store' });
+                if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + configUrl);
+                const data = await res.json();
+                if (data && data.success && data.data) {
+                    window.APP_CONFIG = data.data;
+                    return window.APP_CONFIG;
+                }
+                throw new Error('File JSON khong hop le: ' + configUrl);
+            } catch (err) {
+                console.error('Loi tai config JSON local:', configUrl, err);
+                document.body.innerHTML = '<div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:2rem;font-family:system-ui;text-align:center;background:linear-gradient(135deg,#1a0a1c,#2d1b2e);box-sizing:border-box;color:#fff;">'
+                    + '<div style="font-size:64px;margin-bottom:16px;">😢</div>'
+                    + '<h1 style="font-size:1.6rem;margin-bottom:8px;">Khong tai duoc cau hinh</h1>'
+                    + '<p style="max-width:480px;opacity:0.85;">' + configUrl + '</p>'
+                    + '</div>';
+                throw err;
+            }
+        })();
+        return;
 
         if (websiteId) {
             const LOCAL_CONFIG_DIR = 'data';
