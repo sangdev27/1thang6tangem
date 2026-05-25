@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "data": {
+    "websiteId": "50bbfaeb61587746",
+    "appTitle": "Món Quà Nhỏ",
+    "appIcon": "assets/images/icons/couple.png",
+    "enableWebsiteInfo": false,
+    "enablePasscode": false,
+    "enableMorphEffect": true,
+    "enableSphere": true,
+    "enableSphereFlyingImages": true,
+    "enableLetter": true,
+    "passcodeTitle": "",
+    "passcodeSubtitle": "",
+    "morphTexts": [
+      "Chúc Mừng",
+      "Ngày Quốc Tế Thiếu Nhi ",
+      "1 Tháng 6",
+      "Từ Chồng Yêu Của Em"
+    ],
+    "particleImage": "https://pub-55ae22ef68df430393b12b20b4b9bb5c.r2.dev/uploads/womenday-20260304-054516-sjxp8q.jpeg",
+    "sphereImages": [
+      "https://pub-55ae22ef68df430393b12b20b4b9bb5c.r2.dev/uploads/womenday-20260304-054518-00yv7l.jpeg",
+      "https://pub-55ae22ef68df430393b12b20b4b9bb5c.r2.dev/uploads/womenday-20260304-054519-36jxf3.jpeg",
+      "https://pub-55ae22ef68df430393b12b20b4b9bb5c.r2.dev/uploads/womenday-20260304-054520-ska8g1.jpeg",
+      "https://pub-55ae22ef68df430393b12b20b4b9bb5c.r2.dev/uploads/womenday-20260304-054521-2rqlr3.jpeg",
+      "https://pub-55ae22ef68df430393b12b20b4b9bb5c.r2.dev/uploads/womenday-20260304-054523-vhaos0.jpeg",
+      "https://pub-55ae22ef68df430393b12b20b4b9bb5c.r2.dev/uploads/womenday-20260304-054524-z1ry7s.jpeg",
+      "https://pub-55ae22ef68df430393b12b20b4b9bb5c.r2.dev/uploads/womenday-20260304-054525-0t6iok.jpeg",
+      "https://pub-55ae22ef68df430393b12b20b4b9bb5c.r2.dev/uploads/womenday-20260304-054526-rc5k0j.jpeg",
+      "https://pub-55ae22ef68df430393b12b20b4b9bb5c.r2.dev/uploads/womenday-20260304-054527-9pgxby.jpeg",
+      "https://pub-55ae22ef68df430393b12b20b4b9bb5c.r2.dev/uploads/womenday-20260304-054528-7pcw5s.jpeg"
+    ],
+    "letter": {
+      "text": "Happy Children's Day!\n\nChúc các nhỏ luôn luôn vui vẻ,hạnh phúc ,khỏe mạnh như những bông hoa.",
+      "image": "https://tse3.mm.bing.net/th/id/OIP.6CkYrVFpe3KI-g9g-a-1lAHaHa?cb=thfvnextfalcon&rs=1&pid=ImgDetMain&o=7&rm=3",
+      "caption": "Mãi iu 12D2"
+    },
+    "bgMusic": "https://womens-day-deargift.vercel.app/musics/noinaycoanh.mp3",
+    "bgVolume": 0.55,
+    "expiresAt": null,
+    "productType": "womenday",
+    "createdAt": "2026-03-04T05:45:32.244Z"
+  }
+}
