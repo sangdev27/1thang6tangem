@@ -520,11 +520,13 @@
         const keyName = 'key';
         const keyValue = '9ac7ec230e0e4513578f309d6d3579ad';
         // Handle via config
-        DisableDevtool({
-            tkName: keyName,
-            md5: keyValue,
-            interval: '100',
-        });
+        if (typeof window.DisableDevtool === 'function') {
+            window.DisableDevtool({
+                tkName: keyName,
+                md5: keyValue,
+                interval: '100',
+            });
+        }
     </script>
     <!-- ================================================================
          APP CONFIG — Chỉnh sửa các giá trị tại đây
@@ -874,8 +876,10 @@
 
         /** Lấy vị trí + màu từ ảnh: độ phân giải cao, màu chính xác, chi tiết nét hơn. */
         function generateFromImage(img, count, size) {
-            let w = img.naturalWidth || img.width;
-            let h = img.naturalHeight || img.height;
+            if (!img) return null;
+            let w = img.naturalWidth || img.width || 0;
+            let h = img.naturalHeight || img.height || 0;
+            if (!w || !h) return null;
             const maxDim = 2600;
             if (w > maxDim || h > maxDim) {
                 const s = maxDim / Math.max(w, h);
@@ -886,9 +890,21 @@
             canvas.width = w;
             canvas.height = h;
             const ctx = canvas.getContext('2d');
+            if (!ctx) return null;
             ctx.imageSmoothingEnabled = false;
-            ctx.drawImage(img, 0, 0, w, h);
-            const data = ctx.getImageData(0, 0, w, h).data;
+            try {
+                ctx.drawImage(img, 0, 0, w, h);
+            } catch (err) {
+                console.warn('Failed to draw source image:', err);
+                return null;
+            }
+            let data;
+            try {
+                data = ctx.getImageData(0, 0, w, h).data;
+            } catch (err) {
+                console.warn('Failed to read image pixels:', err);
+                return null;
+            }
             const list = [];
             const brightnessThreshold = 1;
             for (let y = 0; y < h; y++) {
@@ -1232,8 +1248,10 @@
          * → ảnh hiển thị đúng màu, không lóa, đúng vị trí với hạt.
          */
         function createMorphImageOverlay(img) {
-            const w = img.naturalWidth || img.width;
-            const h = img.naturalHeight || img.height;
+            if (!img) return null;
+            const w = img.naturalWidth || img.width || 0;
+            const h = img.naturalHeight || img.height || 0;
+            if (!w || !h) return null;
             const size = CONFIG.textShapeSize;
             const aspect = w / h;
             const planeW = aspect >= 1 ? size : size * aspect;
@@ -1246,9 +1264,15 @@
             offscreen.width  = srcW;
             offscreen.height = srcH;
             const octx = offscreen.getContext('2d');
+            if (!octx) return null;
             octx.imageSmoothingEnabled = true;
             octx.imageSmoothingQuality = 'high';
-            octx.drawImage(img, 0, 0, srcW, srcH);
+            try {
+                octx.drawImage(img, 0, 0, srcW, srcH);
+            } catch (err) {
+                console.warn('Failed to build image overlay:', err);
+                return null;
+            }
 
             const geometry = new THREE.PlaneGeometry(planeW, planeH, 1, 1);
             const texture  = new THREE.CanvasTexture(offscreen);
@@ -1387,15 +1411,25 @@
         /** Tải trước font + ảnh, tạo scatter, rồi hiện nút giữ */
         async function prepareAndWait() {
             await document.fonts.load('140px "Pacifico"');
-            const imgSrc = (cfg.particleImage && String(cfg.particleImage).trim()) ? cfg.particleImage : null;
-            if (imgSrc) {
+            const imgCandidates = [];
+            const primaryParticleImage = (cfg.particleImage && String(cfg.particleImage).trim()) ? String(cfg.particleImage).trim() : '';
+            const appIconImage = (cfg.appIcon && String(cfg.appIcon).trim()) ? String(cfg.appIcon).trim() : 'assets/images/icons/couple.png';
+            if (primaryParticleImage) imgCandidates.push({ src: primaryParticleImage, crossOrigin: true });
+            if (appIconImage) imgCandidates.push({ src: appIconImage, crossOrigin: false });
+            if (appIconImage !== 'assets/images/icons/couple.png') {
+                imgCandidates.push({ src: 'assets/images/icons/couple.png', crossOrigin: false });
+            }
+
+            _preloadedImg = null;
+            for (const candidate of imgCandidates) {
                 const img = new Image();
-                img.crossOrigin = 'anonymous';
-                img.src = imgSrc;
+                if (candidate.crossOrigin) img.crossOrigin = 'anonymous';
+                img.src = candidate.src;
                 await new Promise(r => { img.onload = r; img.onerror = r; });
-                _preloadedImg = img;
-            } else {
-                _preloadedImg = null;
+                if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+                    _preloadedImg = img;
+                    break;
+                }
             }
 
             initScatterParticles();
@@ -1946,11 +1980,24 @@
                         letterContent.classList.add('typing-complete');
                         const letterImageUrl = (cfg.letter && cfg.letter.image && String(cfg.letter.image).trim()) ? cfg.letter.image : '';
                         const captionText = (cfg.letter && cfg.letter.caption != null) ? String(cfg.letter.caption).trim() : '';
+                        const fallbackLetterImage = 'assets/images/letters/cupidletter.png';
                         const wrap = document.getElementById('letterImageWrap');
                         const imgEl = document.getElementById('letterInlineImage');
                         const captionEl = wrap?.querySelector('.letter-image-caption');
                         if (wrap) {
                             if (letterImageUrl && imgEl) {
+                                imgEl.onload = () => {
+                                    imgEl.style.display = 'block';
+                                };
+                                imgEl.onerror = () => {
+                                    if (imgEl.dataset.fallbackApplied === '1') {
+                                        imgEl.style.display = 'none';
+                                        return;
+                                    }
+                                    imgEl.dataset.fallbackApplied = '1';
+                                    imgEl.src = fallbackLetterImage;
+                                };
+                                imgEl.dataset.fallbackApplied = '0';
                                 imgEl.src = letterImageUrl;
                                 imgEl.style.display = 'block';
                             } else if (imgEl) {
